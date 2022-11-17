@@ -1,6 +1,3 @@
-// Load Libraries
-const request = require("request-promise-native");
-
 exports.handler = async (context, event, callback) => {
   try {
     // Load Libraries
@@ -26,12 +23,10 @@ exports.handler = async (context, event, callback) => {
     );
     if (!validSignature) {
       console.log("Invalid Signature");
-      callback("Invalid Signature");
+      return callback("Invalid Signature");
     }
 
     // Step 2: Process Twilio Conversations
-    console.log(context.DOMAIN_NAME);
-    console.log(context.PATH);
     // -- Handle Multiple Events Recieved in Webhook
     for (const msg of event.events) {
       // -- Process Each Event
@@ -43,12 +38,11 @@ exports.handler = async (context, event, callback) => {
         message
       );
     }
-
-    callback(null, {
+    return callback(null, {
       success: true,
     });
   } catch (err) {
     console.log(err);
-    callback("outer catch error");
+    return callback("outer catch error");
   }
 };

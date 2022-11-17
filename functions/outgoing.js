@@ -11,6 +11,14 @@ exports.handler = async (context, event, callback) => {
       event.user_id,
       event.Body
     );
-    callback(null, true);
+    return callback(null, {
+      success: true,
+    });
+  } else {
+    console.log("Outgoing Hook: No Action Needed");
   }
+
+  return callback(null, {
+    success: true,
+  });
 };

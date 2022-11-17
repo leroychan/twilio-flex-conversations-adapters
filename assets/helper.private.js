@@ -14,15 +14,20 @@ const wrappedSendToFlex = async (context, userId, message) => {
     // Step 1: Check for any existing conversation. If doesn't exist, create a new conversation -> add participant -> add webhooks
     const identity = `line:${userId}`;
     console.log(identity);
-    let conversationSid = await twilioFindExistingConversation(
-      client,
-      identity
-    );
+    let { conversationSid, chatServiceSid } =
+      await twilioFindExistingConversation(client, identity);
     console.log(`Old Convo ID: ${conversationSid}`);
+    console.log(`[Via Existing] Chat Service ID: ${chatServiceSid}`);
     if (!conversationSid) {
       // -- Create Conversation
-      conversationSid = await twilioCreateConversation(client, userId);
+      const createConversationResult = await twilioCreateConversation(
+        client,
+        userId
+      );
+      conversationSid = createConversationResult.conversationSid;
+      chatServiceSid = createConversationResult.chatServiceSid;
       console.log(`New Convo ID: ${conversationSid}`);
+      console.log(`Chat Service ID: ${chatServiceSid}`);
       // -- Add Participant into Conversation
       const addParticipantResult = await twilioCreateParticipant(
         client,
@@ -56,26 +61,42 @@ const wrappedSendToFlex = async (context, userId, message) => {
         identity,
         message.text
       );
-    } else if (message.type === "image") {
-      // Debug
-      console.log("--- Inside Image ---");
-      console.log("Content Provider:");
-      console.log(message.contentProvider);
-      const client = getLineClient();
+    } else if (
+      message.type === "image" ||
+      message.type === "video" ||
+      message.type === "audio" ||
+      message.type === "file"
+    ) {
+      // -- Message Type: image, video
+      console.log("--- Message Type: Media (Verbose) ---");
+      console.log(`Content Provider Type: ${message.contentProvider.type}`);
       const messageText = message.text || "";
-      const downloadFile = await client.getMessageContent(message.id);
-      console.log("--Chunk--");
-      let data;
-      for await (const chunk of downloadFile) {
-        if (chunk) {
-          data += chunk;
-        }
-      }
+      const downloadFile = await lineGetMessageContent(
+        context.LINE_CHANNEL_ACCESS_TOKEN,
+        message.id
+      );
+      const data = downloadFile.body;
       const fileType = downloadFile.headers["content-type"];
-      console.log("Headers:");
-      console.log(fileType);
-      console.log('--Upload to MCS--');
-      const twilioClient = context.getTwilioClient();
+      console.log(`Incoming File Type (from HTTP Header): ${fileType}`);
+      console.log("Uploading to Twilio MCS...");
+      let uploadMCSResult = await twilioUploadMediaResource(
+        { accountSid: context.ACCOUNT_SID, authToken: context.AUTH_TOKEN },
+        chatServiceSid,
+        fileType,
+        data
+      );
+      uploadMCSResult = JSON.parse(uploadMCSResult);
+      if (!uploadMCSResult.sid) {
+        return false;
+      }
+      console.log(`Uploaded Twilio Media SID: ${uploadMCSResult.sid}`);
+      addMessageResult = await twilioCreateMessage(
+        client,
+        conversationSid,
+        identity,
+        messageText,
+        uploadMCSResult.sid
+      );
     }
 
     if (addMessageResult) {
@@ -97,7 +118,10 @@ const twilioCreateConversation = async (client, userId) => {
       friendlyName: `LINE Conversation ${userId}`,
     });
     if (result.sid) {
-      return result.sid;
+      return {
+        conversationSid: result.sid,
+        chatServiceSid: result.chatServiceSid,
+      };
     } else {
       return false;
     }
@@ -187,15 +211,33 @@ const twilioCreateScopedWebhook = async (
 /*
  * Twilio - Create Message in Conversation
  */
-const twilioCreateMessage = async (client, conversationSid, author, body) => {
+const twilioCreateMessage = async (
+  client,
+  conversationSid,
+  author,
+  body,
+  mediaSid = null
+) => {
   try {
-    const result = await client.conversations
-      .conversations(conversationSid)
-      .messages.create({
-        author: author,
-        body: body,
-        xTwilioWebhookEnabled: true,
-      });
+    let result;
+    if (!mediaSid) {
+      result = await client.conversations
+        .conversations(conversationSid)
+        .messages.create({
+          author: author,
+          body: body,
+          xTwilioWebhookEnabled: true,
+        });
+    } else {
+      result = await client.conversations
+        .conversations(conversationSid)
+        .messages.create({
+          author: author,
+          body: body,
+          mediaSid: mediaSid,
+          xTwilioWebhookEnabled: true,
+        });
+    }
     if (result.sid) {
       return result.sid;
     } else {
@@ -219,7 +261,12 @@ const twilioFindExistingConversation = async (client, identity) => {
       (conversation) => conversation.conversationState !== "closed"
     );
     if (existingConversation) {
-      return existingConversation.conversationSid;
+      console.log(existingConversation);
+      console.log(existingConversation.chatServiceSid);
+      return {
+        conversationSid: existingConversation.conversationSid,
+        chatServiceSid: existingConversation.chatServiceSid,
+      };
     } else {
       return false;
     }
@@ -276,16 +323,43 @@ const getLineClient = () => {
 };
 
 /*
- * Raw Function - Upload Media Resource
+ * Raw Function - Twilio - Upload Media Resource
  */
-const twilioUploadMediaResoruce = (chatServiceId, contentType, data) => {
+const twilioUploadMediaResource = async (
+  auth,
+  chatServiceSid,
+  contentType,
+  data
+) => {
   const options = {
-    url: `https://mcs.us1.twilio.com/v1/Services/${chatServiceId}/Media`,
+    url: `https://mcs.us1.twilio.com/v1/Services/${chatServiceSid}/Media`,
     method: "POST",
-    headers: {
-      'Content-Type': contentType
+    auth: {
+      username: auth.accountSid,
+      password: auth.authToken,
     },
-    body: data
+    headers: {
+      "Content-Type": contentType,
+    },
+    body: data,
+    encoding: null,
+  };
+  const result = await request(options);
+  return result;
+};
+
+/*
+ * Raw Function - LINE Get Content
+ */
+const lineGetMessageContent = async (auth, messageId) => {
+  const options = {
+    url: `https://api-data.line.me/v2/bot/message/${messageId}/content`,
+    method: "GET",
+    auth: {
+      bearer: auth,
+    },
+    resolveWithFullResponse: true,
+    encoding: null,
   };
   const result = await request(options);
   return result;
