@@ -1,0 +1,24 @@
+{
+  "name": "twilio-flex-conversations-line",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "twilio-run",
+    "deploy": "twilio-run deploy"
+  },
+  "dependencies": {
+    "@line/bot-sdk": "^7.5.2",
+    "@twilio/mcs-client": "^0.6.1",
+    "@twilio/runtime-handler": "1.2.5",
+    "request": "^2.88.2",
+    "request-promise-native": "^1.0.9",
+    "twilio": "^3.56"
+  },
+  "devDependencies": {
+    "twilio-run": "^3.4.5"
+  },
+  "engines": {
+    "node": "14"
+  }
+}
