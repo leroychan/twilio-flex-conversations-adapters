@@ -311,6 +311,25 @@ const lineSendPushMessage = async (userId, message) => {
 };
 
 /*
+ * LINE - Send Push Message
+ */
+const lineSendPushMedia = async (userId, type, contentUrl) => {
+  try {
+    const client = getLineClient();
+    const sendMessagePayload = {
+      type: type,
+      originalContentUrl: contentUrl,
+      previewImageUrl: contentUrl,
+    };
+    const result = await client.pushMessage(userId, sendMessagePayload);
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+/*
  * Raw Function - Return LINE Client
  */
 const getLineClient = () => {
@@ -349,6 +368,23 @@ const twilioUploadMediaResource = async (
 };
 
 /*
+ * Raw Function - Twilio - Get Media
+ */
+const twilioGetMediaResource = async (auth, chatServiceSid, mediaSid) => {
+  const options = {
+    url: `https://mcs.us1.twilio.com/v1/Services/${chatServiceSid}/Media/${mediaSid}`,
+    method: "GET",
+    auth: {
+      username: auth.accountSid,
+      password: auth.authToken,
+    },
+    json: true,
+  };
+  const result = await request(options);
+  return result;
+};
+
+/*
  * Raw Function - LINE Get Content
  */
 const lineGetMessageContent = async (auth, messageId) => {
@@ -369,4 +405,6 @@ module.exports = {
   wrappedSendToFlex,
   lineValidateSignature,
   lineSendPushMessage,
+  lineSendPushMedia,
+  twilioGetMediaResource,
 };
