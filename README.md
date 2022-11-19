@@ -13,9 +13,9 @@ _Twilio Flex 2.0 - LINE Channel_ is a custom channel connector to enable LINE as
 | Emoji                      | :negative_squared_cross_mark: | :negative_squared_cross_mark: |
 | LINE Sticker               | :negative_squared_cross_mark: | :negative_squared_cross_mark: |
 
-_Legends_
-:white_check_mark: Supported
-:negative_squared_cross_mark: Not Supported in this project but can be implemented
+_Legends_  
+:white_check_mark: Supported  
+:negative_squared_cross_mark: Not Supported in this project but can be implemented  
 :no_entry_sign: Not Supported due to limitations on LINE Messaging API
 
 ## Pre-requisites
