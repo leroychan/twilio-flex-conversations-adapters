@@ -21,32 +21,50 @@ exports.handler = async (context, event, callback) => {
       for (let media of JSON.parse(event.Media)) {
         console.log("---Media Payload---");
         console.log(media);
-        if (
-          media.ContentType === "image/png" ||
-          media.ContentType === "image/jpeg"
-        ) {
-          console.log(`Media SID: ${media.Sid}`);
-          console.log(`Chat Service SID: ${event.ChatServiceSid}`);
-          const mediaResource = await helper.twilioGetMediaResource(
-            { accountSid: context.ACCOUNT_SID, authToken: context.AUTH_TOKEN },
-            event.ChatServiceSid,
-            media.Sid
-          );
-          if (
-            !mediaResource ||
-            !mediaResource.links ||
-            !mediaResource.links.content_direct_temporary
-          ) {
-            return callback("Unable to get temporary URL for image");
-          }
-          const sendToLineResult = await helper.lineSendPushMedia(
-            event.user_id,
-            "image",
-            mediaResource.links.content_direct_temporary
-          );
-          console.log("--debug--");
-          console.log(sendToLineResult);
+        console.log(`Media SID: ${media.Sid}`);
+        console.log(`Chat Service SID: ${event.ChatServiceSid}`);
+        let mediaType;
+        switch (media.ContentType) {
+          case "image/png":
+            mediaType = "image";
+            break;
+          case "image/jpeg":
+            mediaType = "image";
+            break;
+          case "image/jpg":
+            mediaType = "image";
+            break;
+          case "video/mp4":
+            mediaType = "video";
+            break;
+          case "video/mpeg":
+            mediaType = "video";
+            break;
+          default:
+            mediaType = false;
         }
+        if (!mediaType) {
+          return callback("File type is not supported");
+        }
+        const mediaResource = await helper.twilioGetMediaResource(
+          { accountSid: context.ACCOUNT_SID, authToken: context.AUTH_TOKEN },
+          event.ChatServiceSid,
+          media.Sid
+        );
+        if (
+          !mediaResource ||
+          !mediaResource.links ||
+          !mediaResource.links.content_direct_temporary
+        ) {
+          return callback("Unable to get temporary URL for image");
+        }
+        const sendToLineResult = await helper.lineSendPushMedia(
+          event.user_id,
+          mediaType,
+          mediaResource.links.content_direct_temporary
+        );
+        console.log("--debug--");
+        console.log(sendToLineResult);
       }
     }
 
