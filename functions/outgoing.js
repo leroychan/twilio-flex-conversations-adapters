@@ -23,6 +23,7 @@ exports.handler = async (context, event, callback) => {
         console.log(media);
         console.log(`Media SID: ${media.Sid}`);
         console.log(`Chat Service SID: ${event.ChatServiceSid}`);
+        // -- Obtain Media Type
         let mediaType;
         switch (media.ContentType) {
           case "image/png":
@@ -46,6 +47,7 @@ exports.handler = async (context, event, callback) => {
         if (!mediaType) {
           return callback("File type is not supported");
         }
+        // -- Retrieve Temporary URL (Public) of Twilio Media Resource
         const mediaResource = await helper.twilioGetMediaResource(
           { accountSid: context.ACCOUNT_SID, authToken: context.AUTH_TOKEN },
           event.ChatServiceSid,
@@ -58,13 +60,12 @@ exports.handler = async (context, event, callback) => {
         ) {
           return callback("Unable to get temporary URL for image");
         }
+        // -- Send to LINE
         const sendToLineResult = await helper.lineSendPushMedia(
           event.user_id,
           mediaType,
           mediaResource.links.content_direct_temporary
         );
-        console.log("--debug--");
-        console.log(sendToLineResult);
       }
     }
 
