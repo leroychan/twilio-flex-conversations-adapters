@@ -22,4 +22,11 @@ _Legends:_
 
 ## Pre-requisites
 
+1. Twilio Flex Account ([Guide](https://support.twilio.com/hc/en-us/articles/360020442333-Setup-a-Twilio-Flex-Account))
+2. Node.js v14.x.x only ([Guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm))
+3. Twilio CLI v5.2.2 or above ([Guide](https://www.twilio.com/docs/twilio-cli/quickstart))
+4. Twilio CLI Serverless Plugin v3.0.4 or above ([Guide](https://www.twilio.com/docs/labs/serverless-toolkit/getting-started))
+
 ## Getting Started
+
+### Step 1: Create LINE Developer Account
