@@ -78,7 +78,7 @@ npm install
 cp .env.example .env
 ```
 
-Configure the `.env` file using your preferred code editor with all required values obtained from Step 1 and 2. You can leave `ACCOUNT_SID=xxx` and `AUTH_TOKEN=xxx` empty as it will be populated by default during run time.
+Configure the `.env` file using your preferred code editor with all the required values obtained from Step 1 and 2. You can leave `ACCOUNT_SID=xxx` and `AUTH_TOKEN=xxx` empty as it will be populated by default during run time.
 
 Once configured and you are ready to deploy it, go back to your terminal and issue the following command:
 
@@ -94,7 +94,7 @@ After you have successfully deployed the Twilio Function, copy the the entire AP
 
 ### Step 5: Done !
 
-Congratulations! You are now ready to start testing the LINEintegration into Flex 2.0!
+Congratulations! You are now ready to start testing the LINE integration into Flex 2.0!
 
 Start by logging onto your Flex’s agent interface and try sending a message to your LINE channel. You should see the task coming into Flex!
 
