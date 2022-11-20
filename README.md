@@ -35,3 +35,27 @@ _Legends:_
 ## Getting Started
 
 ### Step 1: Obtain LINE Messaging API Channel Credentials
+
+Login to [LINE Developer Console](https://developers.line.biz/console/) and create a `LINE - Messaging API Channel`.
+
+You will need the following before proceeding:
+
+1. LINE Channel ID (Under `Basic Settings`)
+2. LINE Channel Secret (Under `Basic Settings`)
+3. LINE Channel Access Token (Under `Messaging API`)
+
+### Step 2: Create a Twilio Studio Flow
+
+Login to [Twilio Console](https://console.twilio.com/) and under `Studio`, create a new Studio Flow.
+
+Within the Studio Flow, drag-and-drop the `Send to Flex` widget and configure the `Workflow` and `Task Channel` accordingly. For `Task Channel`, please either choose `Chat` or `Programmable Chat`.
+
+Once created, connect `Incoming Conversation` trigger to the `Send to Flex` widget and click `Publish`.
+
+The Studio Flow should be configured similar to the screenshot below:
+
+![Flex 2.0 - LINE Channel Studo Flow](docs/flex2_studio_flow.png)
+
+You will need the following before proceeding:
+
+1. Studio Flow SID
