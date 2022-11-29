@@ -80,6 +80,8 @@ cp .env.example .env
 
 Configure the `.env` file using your preferred code editor with all the required values obtained from Step 1 and 2. You can leave `ACCOUNT_SID=xxx` and `AUTH_TOKEN=xxx` empty as it will be populated by default during run time.
 
+Before you deploy, ensure that `twilio profiles:list` has an active account set.
+
 Once configured and you are ready to deploy it, go back to your terminal and issue the following command:
 
 ```

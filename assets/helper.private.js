@@ -26,8 +26,6 @@ const wrappedSendToFlex = async (context, userId, message) => {
       );
       conversationSid = createConversationResult.conversationSid;
       chatServiceSid = createConversationResult.chatServiceSid;
-      console.log(`New Convo ID: ${conversationSid}`);
-      console.log(`Chat Service ID: ${chatServiceSid}`);
       // -- Add Participant into Conversation
       const addParticipantResult = await twilioCreateParticipant(
         client,
