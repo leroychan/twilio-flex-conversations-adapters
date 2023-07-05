@@ -1,4 +1,19 @@
-# Twilio Flex 2.0 - LINE Channel
+# Twilio Flex 2.0 - Conversation Adapters
+
+## Viber Channel
+
+_Twilio Flex 2.0 - VIBER Channel_ is a custom channel connector to enable Viber as a conversation channel in Flex 2.x It uses Twilio Functions as a middleware between [Viber API][(https://developers.viber.com/docs/api/rest-bot-api/#get-started](https://developers.viber.com/docs/api/rest-bot-api/#get-started)) and Twilio Flex.
+
+### Viber Setup
+
+1. Create Viber developer account - https://developers.viber.com/
+2. Create a bot - https://partners.viber.com/account/create-bot-account
+3. Complete required fields and copy secure token
+4. Put token in `.env` file `VIBER_AUTH_TOKEN`
+
+![Flex 2.0 - Viber Bot](docs/flex2_viber_bot.png)
+
+## LINE Channel
 
 _Twilio Flex 2.0 - LINE Channel_ is a custom channel connector to enable LINE as a conversation channel in Flex 2.0. It uses Twilio Functions as a middleware between [LINE Messaging API](https://developers.line.biz/en/docs/messaging-api/) and Twilio Flex.
 

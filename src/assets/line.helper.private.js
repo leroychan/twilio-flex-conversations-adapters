@@ -44,7 +44,7 @@ const wrappedSendToFlex = async (context, userId, message) => {
         conversationSid,
         userId,
         context.DOMAIN_NAME,
-        "outgoing"
+        "api/line/outgoing"
       );
     }
 

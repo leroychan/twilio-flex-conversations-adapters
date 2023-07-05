@@ -1,24 +1,35 @@
 {
-  "name": "twilio-flex-conversations-line",
-  "version": "0.0.0",
+  "name": "twilio-flex-conversations-adapters",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "twilio-run",
-    "deploy": "twilio-run deploy"
+    "test": "tsc --noEmit",
+    "start": "twilio-run --functions-folder dist/functions --assets-folder dist/assets",
+    "deploy": "twilio-run deploy --functions-folder dist/functions --assets-folder dist/assets",
+    "build": "tsc && npm run build:copy-assets && npm run build:copy-js-functions",
+    "build:copy-assets": "copyfiles src/assets/* src/assets/**/* --up 2 --exclude **/*.ts dist/assets/",
+    "build:copy-js-functions": "copyfiles src/functions/*.js src/functions/**/*.js --up 2 --exclude **/*.ts dist/functions/",
+    "prestart": "npm run build",
+    "predeploy": "npm run build"
   },
   "dependencies": {
     "@line/bot-sdk": "^7.5.2",
+    "@twilio-labs/serverless-runtime-types": "^1.1",
     "@twilio/mcs-client": "^0.6.1",
     "@twilio/runtime-handler": "1.2.5",
+    "node-fetch": "^2",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
-    "twilio": "^3.56"
+    "twilio": "^3.56",
+    "typescript": "4"
   },
   "devDependencies": {
-    "twilio-run": "^3.4.5"
+    "@types/node-fetch": "^2.6.2",
+    "@types/node": "^20.3.3",
+    "copyfiles": "^2.2.0",
+    "twilio-run": "^3.5.2"
   },
   "engines": {
-    "node": "14"
+    "node": "16"
   }
 }

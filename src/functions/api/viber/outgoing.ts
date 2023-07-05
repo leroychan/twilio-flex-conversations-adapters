@@ -1,18 +1,50 @@
-exports.handler = async (context, event, callback) => {
+// Imports global types
+import "@twilio-labs/serverless-runtime-types";
+// Fetches specific types
+import {
+  Context,
+  ServerlessCallback,
+  ServerlessFunctionSignature,
+} from "@twilio-labs/serverless-runtime-types/types";
+import { ViberContext, ViberMessageType } from "./viber_types";
+import * as Helper from "../../../assets/viber.helper.private";
+import * as Util from "../../../assets/common.helper.private";
+
+type IncomingMessageType = {
+  Source: string;
+  user_id: string;
+  Media: string;
+  Body: string;
+  ChatServiceSid: string;
+};
+export const handler: ServerlessFunctionSignature<
+  ViberContext,
+  IncomingMessageType
+> = async (context, event, callback: ServerlessCallback) => {
+  console.log("event received - /api/viber/outgoing: ", event);
+
   // Load Libraries
-  const helper = require(Runtime.getAssets()["/helper.js"].path);
+  const { viberSendTextMessage, viberSendMedia } = <typeof Helper>(
+    require(Runtime.getAssets()["/viber.helper.js"].path)
+  );
+
+  // Load Libraries
+  const { twilioGetMediaResource } = <typeof Util>(
+    require(Runtime.getAssets()["/common.helper.js"].path)
+  );
 
   // Process Only Agent Messages
   if (event.Source === "SDK") {
     // Parse Type of Messages
     console.log("---Start of Raw Event---");
     console.log(event);
-    console.log(event.user_id);
+    console.log(`RAW event.user_id: ${event.user_id}`);
     console.log("---End of Raw Event---");
     if (!event.Media) {
       // Agent Message Type: Text
-      const sendToLineResult = await helper.lineSendPushMessage(
-        event.user_id,
+      await viberSendTextMessage(
+        context,
+        decodeURIComponent(event.user_id),
         event.Body
       );
     } else {
@@ -24,31 +56,30 @@ exports.handler = async (context, event, callback) => {
         console.log(`Media SID: ${media.Sid}`);
         console.log(`Chat Service SID: ${event.ChatServiceSid}`);
         // -- Obtain Media Type
-        let mediaType;
+        let mediaType: ViberMessageType;
+
         switch (media.ContentType) {
           case "image/png":
-            mediaType = "image";
+            mediaType = ViberMessageType.PICTURE;
             break;
           case "image/jpeg":
-            mediaType = "image";
+            mediaType = ViberMessageType.PICTURE;
             break;
           case "image/jpg":
-            mediaType = "image";
+            mediaType = ViberMessageType.PICTURE;
             break;
           case "video/mp4":
-            mediaType = "video";
+            mediaType = ViberMessageType.VIDEO;
             break;
           case "video/mpeg":
-            mediaType = "video";
+            mediaType = ViberMessageType.VIDEO;
             break;
           default:
-            mediaType = false;
+            return callback("File type is not supported");
         }
-        if (!mediaType) {
-          return callback("File type is not supported");
-        }
+
         // -- Retrieve Temporary URL (Public) of Twilio Media Resource
-        const mediaResource = await helper.twilioGetMediaResource(
+        const mediaResource = await twilioGetMediaResource(
           { accountSid: context.ACCOUNT_SID, authToken: context.AUTH_TOKEN },
           event.ChatServiceSid,
           media.Sid
@@ -60,8 +91,9 @@ exports.handler = async (context, event, callback) => {
         ) {
           return callback("Unable to get temporary URL for image");
         }
-        // -- Send to LINE
-        const sendToLineResult = await helper.lineSendPushMedia(
+        // -- Send to Viber
+        await viberSendMedia(
+          context,
           event.user_id,
           mediaType,
           mediaResource.links.content_direct_temporary
