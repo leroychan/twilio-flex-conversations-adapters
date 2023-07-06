@@ -2,23 +2,22 @@
 import "@twilio-labs/serverless-runtime-types";
 // Fetches specific types
 import {
-  Context,
   ServerlessCallback,
   ServerlessFunctionSignature,
 } from "@twilio-labs/serverless-runtime-types/types";
 
-import * as Helper from "./viber.helper.private";
+import * as Helper from "./line.helper.private";
 import * as Util from "../common/common.helper.private";
-import * as ViberTypes from "./viber_types.private";
+import * as LINETypes from "./line_types.private";
 
 // Load Libraries
-const { ViberMessageType } = <typeof ViberTypes>(
-  require(Runtime.getFunctions()["api/viber/viber_types"].path)
+const { LINEMessageType } = <typeof LINETypes>(
+  require(Runtime.getFunctions()["api/line/line_types"].path)
 );
 
 // Load Libraries
-const { viberSendTextMessage, viberSendMedia } = <typeof Helper>(
-  require(Runtime.getFunctions()["api/viber/viber.helper"].path)
+const { lineSendTextMessage, lineSendMediaMessage } = <typeof Helper>(
+  require(Runtime.getFunctions()["api/line/line.helper"].path)
 );
 
 // Load Libraries
@@ -37,11 +36,12 @@ type IncomingMessageType = {
   Body: string;
   ChatServiceSid: string;
 };
+
 export const handler: ServerlessFunctionSignature<
-  ViberTypes.ViberContext,
+  LINETypes.LINEContext,
   IncomingMessageType
 > = async (context, event, callback: ServerlessCallback) => {
-  console.log("event received - /api/viber/outgoing: ", event);
+  console.log("event received - /api/line/outgoing: ", event);
 
   // Process Only Agent Messages
   if (event.Source === "SDK") {
@@ -52,11 +52,7 @@ export const handler: ServerlessFunctionSignature<
     console.log("---End of Raw Event---");
     if (!event.Media) {
       // Agent Message Type: Text
-      await viberSendTextMessage(
-        context,
-        decodeURIComponent(event.user_id),
-        event.Body
-      );
+      await lineSendTextMessage(context, event.user_id, event.Body);
     } else {
       // Agent Message Type: Media
       // -- Handle Multiple Media object(s)
@@ -66,23 +62,23 @@ export const handler: ServerlessFunctionSignature<
         console.log(`Media SID: ${media.Sid}`);
         console.log(`Chat Service SID: ${event.ChatServiceSid}`);
         // -- Obtain Media Type
-        let mediaType: ViberTypes.ViberMessageType;
+        let mediaType: LINETypes.LINEMessageType;
 
         switch (media.ContentType) {
           case "image/png":
-            mediaType = ViberMessageType.PICTURE;
+            mediaType = LINEMessageType.IMAGE;
             break;
           case "image/jpeg":
-            mediaType = ViberMessageType.PICTURE;
+            mediaType = LINEMessageType.IMAGE;
             break;
           case "image/jpg":
-            mediaType = ViberMessageType.PICTURE;
+            mediaType = LINEMessageType.IMAGE;
             break;
           case "video/mp4":
-            mediaType = ViberMessageType.VIDEO;
+            mediaType = LINEMessageType.VIDEO;
             break;
           case "video/mpeg":
-            mediaType = ViberMessageType.VIDEO;
+            mediaType = LINEMessageType.VIDEO;
             break;
           default:
             return callback("File type is not supported");
@@ -101,10 +97,10 @@ export const handler: ServerlessFunctionSignature<
         ) {
           return callback("Unable to get temporary URL for image");
         }
-        // -- Send to Viber
-        await viberSendMedia(
+        // -- Send to LINE
+        await lineSendMediaMessage(
           context,
-          decodeURIComponent(event.user_id),
+          event.user_id,
           mediaType,
           mediaResource.links.content_direct_temporary
         );
