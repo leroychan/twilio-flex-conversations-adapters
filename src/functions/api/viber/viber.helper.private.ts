@@ -1,14 +1,26 @@
-import {
-  ViberContext,
-  ViberMessage,
-  ViberMessageType,
-  ViberMessageText,
-} from "../functions/api/viber/viber_types";
-
 import crypto from "crypto";
 import { Context } from "@twilio-labs/serverless-runtime-types/types";
 import fetch from "node-fetch";
-import * as Util from "./common.helper.private";
+import * as Util from "../common/common.helper.private";
+import * as ViberTypes from "./viber_types.private";
+
+// Load Libraries
+const { ViberMessageType } = <typeof ViberTypes>(
+  require(Runtime.getFunctions()["api/viber/viber_types"].path)
+);
+
+// Load Libraries
+const {
+  twilioUploadMediaResource,
+  twilioFindExistingConversation,
+  twilioCreateConversation,
+  twilioCreateParticipant,
+  twilioCreateScopedWebhookStudio,
+  twilioCreateScopedWebhook,
+  twilioCreateMessage,
+} = <typeof Util>(
+  require(Runtime.getFunctions()["api/common/common.helper"].path)
+);
 
 export const validateSignature = (
   signature: string,
@@ -39,22 +51,11 @@ const viberGetMessageContent = async (uri: string) => {
 };
 
 export const wrappedSendToFlex = async (
-  context: Context<ViberContext>,
+  context: Context<ViberTypes.ViberContext>,
   userId: string,
-  event: ViberMessage
+  event: ViberTypes.ViberMessage
 ) => {
   const client = context.getTwilioClient();
-
-  // Load Libraries
-  const {
-    twilioUploadMediaResource,
-    twilioFindExistingConversation,
-    twilioCreateConversation,
-    twilioCreateParticipant,
-    twilioCreateScopedWebhookStudio,
-    twilioCreateScopedWebhook,
-    twilioCreateMessage,
-  } = <typeof Util>require(Runtime.getAssets()["/common.helper.js"].path);
 
   // Step 1: Check for any existing conversation. If doesn't exist, create a new conversation -> add participant -> add webhooks
   const identity = `viber:${userId}`;
@@ -109,7 +110,7 @@ export const wrappedSendToFlex = async (
       client,
       conversationSid,
       event.sender.name,
-      (event.message as ViberMessageText).text
+      (event.message as ViberTypes.ViberMessageText).text
     );
   } else if (
     event.message.type === ViberMessageType.PICTURE ||
@@ -162,7 +163,7 @@ export const wrappedSendToFlex = async (
  * Viber - Send Push Message
  */
 export const viberSendTextMessage = async (
-  context: Context<ViberContext>,
+  context: Context<ViberTypes.ViberContext>,
   userId: string,
   message: string
 ) => {
@@ -199,9 +200,9 @@ export const viberSendTextMessage = async (
  * Viber - Send Push Message
  */
 export const viberSendMedia = async (
-  context: Context<ViberContext>,
+  context: Context<ViberTypes.ViberContext>,
   userId: string,
-  type: ViberMessageType,
+  type: ViberTypes.ViberMessageType,
   contentUrl: string
 ) => {
   try {

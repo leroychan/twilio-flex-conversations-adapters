@@ -6,19 +6,27 @@ import {
   ServerlessCallback,
   ServerlessFunctionSignature,
 } from "@twilio-labs/serverless-runtime-types/types";
-import { ViberContext, ViberMessage } from "./viber_types";
-import * as Helper from "../../../assets/viber.helper.private";
+import * as ViberTypes from "./viber_types.private";
+import * as Helper from "./viber.helper.private";
 
 export const handler: ServerlessFunctionSignature<
-  ViberContext,
-  ViberMessage
+  ViberTypes.ViberContext,
+  ViberTypes.ViberMessage
 > = async (context, event, callback: ServerlessCallback) => {
   console.log("event received - /api/viber/incoming: ", event);
 
   try {
+    console.log("Functions: ", Runtime.getFunctions());
+    console.log("Assets: ", Runtime.getAssets());
+
+    // Load Libraries
+    const { ViberMessageType } = <typeof ViberTypes>(
+      require(Runtime.getFunctions()["api/viber/viber_types"].path)
+    );
+
     // Load Libraries
     const { wrappedSendToFlex } = <typeof Helper>(
-      require(Runtime.getAssets()["/viber.helper.js"].path)
+      require(Runtime.getFunctions()["api/viber/viber.helper"].path)
     );
 
     // Debug: Console Log Incoming Events

@@ -6,9 +6,25 @@ import {
   ServerlessCallback,
   ServerlessFunctionSignature,
 } from "@twilio-labs/serverless-runtime-types/types";
-import { ViberContext, ViberMessageType } from "./viber_types";
-import * as Helper from "../../../assets/viber.helper.private";
-import * as Util from "../../../assets/common.helper.private";
+
+import * as Helper from "./viber.helper.private";
+import * as Util from "../common/common.helper.private";
+import * as ViberTypes from "./viber_types.private";
+
+// Load Libraries
+const { ViberMessageType } = <typeof ViberTypes>(
+  require(Runtime.getFunctions()["api/viber/viber_types"].path)
+);
+
+// Load Libraries
+const { viberSendTextMessage, viberSendMedia } = <typeof Helper>(
+  require(Runtime.getFunctions()["api/viber/viber.helper"].path)
+);
+
+// Load Libraries
+const { twilioGetMediaResource } = <typeof Util>(
+  require(Runtime.getFunctions()["api/common/common.helper"].path)
+);
 
 type IncomingMessageType = {
   Source: string;
@@ -18,20 +34,10 @@ type IncomingMessageType = {
   ChatServiceSid: string;
 };
 export const handler: ServerlessFunctionSignature<
-  ViberContext,
+  ViberTypes.ViberContext,
   IncomingMessageType
 > = async (context, event, callback: ServerlessCallback) => {
   console.log("event received - /api/viber/outgoing: ", event);
-
-  // Load Libraries
-  const { viberSendTextMessage, viberSendMedia } = <typeof Helper>(
-    require(Runtime.getAssets()["/viber.helper.js"].path)
-  );
-
-  // Load Libraries
-  const { twilioGetMediaResource } = <typeof Util>(
-    require(Runtime.getAssets()["/common.helper.js"].path)
-  );
 
   // Process Only Agent Messages
   if (event.Source === "SDK") {
@@ -56,7 +62,7 @@ export const handler: ServerlessFunctionSignature<
         console.log(`Media SID: ${media.Sid}`);
         console.log(`Chat Service SID: ${event.ChatServiceSid}`);
         // -- Obtain Media Type
-        let mediaType: ViberMessageType;
+        let mediaType: ViberTypes.ViberMessageType;
 
         switch (media.ContentType) {
           case "image/png":
