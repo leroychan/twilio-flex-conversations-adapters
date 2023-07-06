@@ -1,6 +1,6 @@
 exports.handler = async (context, event, callback) => {
   // Load Libraries
-  const helper = require(Runtime.getAssets()["/helper.js"].path);
+  const helper = require(Runtime.getAssets()["/line.helper.js"].path);
 
   // Process Only Agent Messages
   if (event.Source === "SDK") {
