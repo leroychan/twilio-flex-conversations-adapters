@@ -71,7 +71,8 @@ export const wrappedSendToFlex = async (
     const createConversationResult = await twilioCreateConversation(
       "VIBER",
       client,
-      userId
+      userId,
+      event.sender
     );
     conversationSid = createConversationResult.conversationSid;
     chatServiceSid = createConversationResult.chatServiceSid;
@@ -125,7 +126,6 @@ export const wrappedSendToFlex = async (
     }
 
     const downloadFile = await viberGetMessageContent(event.message.media);
-
     const data = downloadFile.body;
     const fileType = downloadFile.headers.get("content-type");
 
@@ -140,7 +140,8 @@ export const wrappedSendToFlex = async (
       { accountSid: context.ACCOUNT_SID, authToken: context.AUTH_TOKEN },
       chatServiceSid,
       fileType,
-      data
+      data,
+      event.message.file_name
     );
 
     if (!uploadMCSResult.sid) {
@@ -150,7 +151,7 @@ export const wrappedSendToFlex = async (
     addMessageResult = await twilioCreateMessage(
       client,
       conversationSid,
-      identity,
+      event.sender.name,
       event.message.file_name,
       uploadMCSResult.sid
     );

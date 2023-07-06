@@ -1,5 +1,6 @@
 import * as twilio from "twilio";
 import fetch from "node-fetch";
+import FormData from "form-data";
 
 export type TwilioCredentials = {
   accountSid: string;
@@ -46,7 +47,8 @@ export const twilioUploadMediaResource = async (
   credentials: TwilioCredentials,
   chatServiceSid: string,
   contentType: string,
-  data: any
+  data: any,
+  fileName: string
 ) => {
   // Authenticate with Twilio
   let auth =
@@ -55,13 +57,19 @@ export const twilioUploadMediaResource = async (
       "base64"
     );
 
+  const form = new FormData();
+  form.append("file", data, {
+    filename: fileName,
+    contentType: contentType,
+  });
+
   // Send message
   const response = await fetch(
     `https://mcs.us1.twilio.com/v1/Services/${chatServiceSid}/Media`,
     {
       method: "post",
       headers: { "Content-Type": contentType, Authorization: auth },
-      body: data,
+      body: form,
     }
   );
   return (await response.json()) as TwilioMediaResponse;
@@ -137,10 +145,14 @@ export const twilioCreateParticipant = async (
 export const twilioCreateConversation = async (
   adapter: string,
   client: twilio.Twilio,
-  userId: string
+  userId: string,
+  pre_engagement_attributes: any = {}
 ) => {
   const result = await client.conversations.v1.conversations.create({
     friendlyName: `${adapter} Conversation ${userId}`,
+    attributes: JSON.stringify({
+      pre_engagement_data: pre_engagement_attributes,
+    }),
   });
   if (result.sid) {
     return {
