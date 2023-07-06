@@ -9,6 +9,16 @@ import {
 import * as ViberTypes from "./viber_types.private";
 import * as Helper from "./viber.helper.private";
 
+// Load Libraries
+const { ViberMessageType } = <typeof ViberTypes>(
+  require(Runtime.getFunctions()["api/viber/viber_types"].path)
+);
+
+// Load Libraries
+const { wrappedSendToFlex } = <typeof Helper>(
+  require(Runtime.getFunctions()["api/viber/viber.helper"].path)
+);
+
 export const handler: ServerlessFunctionSignature<
   ViberTypes.ViberContext,
   ViberTypes.ViberMessage
@@ -16,19 +26,6 @@ export const handler: ServerlessFunctionSignature<
   console.log("event received - /api/viber/incoming: ", event);
 
   try {
-    console.log("Functions: ", Runtime.getFunctions());
-    console.log("Assets: ", Runtime.getAssets());
-
-    // Load Libraries
-    const { ViberMessageType } = <typeof ViberTypes>(
-      require(Runtime.getFunctions()["api/viber/viber_types"].path)
-    );
-
-    // Load Libraries
-    const { wrappedSendToFlex } = <typeof Helper>(
-      require(Runtime.getFunctions()["api/viber/viber.helper"].path)
-    );
-
     // Debug: Console Log Incoming Events
     console.log("---Start of Raw Event---");
     console.log(event);

@@ -100,7 +100,7 @@ export const handler: ServerlessFunctionSignature<
         // -- Send to Viber
         await viberSendMedia(
           context,
-          event.user_id,
+          decodeURIComponent(event.user_id),
           mediaType,
           mediaResource.links.content_direct_temporary
         );

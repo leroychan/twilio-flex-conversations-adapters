@@ -1,6 +1,5 @@
 import * as twilio from "twilio";
 import fetch from "node-fetch";
-import FormData from "form-data";
 
 export type TwilioCredentials = {
   accountSid: string;
@@ -57,19 +56,13 @@ export const twilioUploadMediaResource = async (
       "base64"
     );
 
-  const form = new FormData();
-  form.append("file", data, {
-    filename: fileName,
-    contentType: contentType,
-  });
-
   // Send message
   const response = await fetch(
     `https://mcs.us1.twilio.com/v1/Services/${chatServiceSid}/Media`,
     {
       method: "post",
       headers: { "Content-Type": contentType, Authorization: auth },
-      body: form,
+      body: data,
     }
   );
   return (await response.json()) as TwilioMediaResponse;
