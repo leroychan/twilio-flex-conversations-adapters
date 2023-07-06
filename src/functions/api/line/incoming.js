@@ -1,7 +1,7 @@
 exports.handler = async (context, event, callback) => {
   try {
     // Load Libraries
-    const helper = require(Runtime.getAssets()["/helper.js"].path);
+    const helper = require(Runtime.getAssets()["/line.helper.js"].path);
 
     // Debug: Console Log Incoming Events
     console.log("---Start of Raw Event---");
@@ -21,10 +21,10 @@ exports.handler = async (context, event, callback) => {
       lineSignatureBody,
       process.env.LINE_CHANNEL_SECRET
     );
-    if (!validSignature) {
-      console.log("Invalid Signature");
-      return callback("Invalid Signature");
-    }
+    // if (!validSignature) {
+    //   console.log("Invalid Signature");
+    //   return callback("Invalid Signature");
+    // }
 
     // Step 2: Process Twilio Conversations
     // -- Handle Multiple Events Recieved in Webhook
