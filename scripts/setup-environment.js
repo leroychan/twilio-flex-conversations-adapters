@@ -1,5 +1,5 @@
 // Import Libraries
-const { getEnvironmentVariables, copyFile } = require("./common");
+const { updateEnvironmentVariables, copyFile } = require("./common");
 
 // Set Variables
 const EXAMPLE_ENVIRONMENT_FILE_NAME = ".env.example";
