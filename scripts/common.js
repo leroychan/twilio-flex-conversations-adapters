@@ -1,7 +1,7 @@
 // Import Libraries
 const shell = require("shelljs");
 
-export const getEnvironmentVariables = () => {
+exports.getEnvironmentVariables = () => {
   try {
     return process.env;
   } catch (e) {

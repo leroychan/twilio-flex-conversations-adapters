@@ -1,4 +1,4 @@
-name: Deploy Flex
+name: Deploy to Flex
 
 on:
   workflow_dispatch:
