@@ -66,12 +66,19 @@ export const wrappedSendToFlex = async (
       conversationSid,
       context.LINE_STUDIO_FLOW_SID
     );
-    // -- Create Webhook (Conversation Scoped) for Outgoing Conversation (Flex to Viber)
+    // -- Create Webhook (Conversation Scoped) for Outgoing Conversation (Flex to LINE)
+    let domainName = context.DOMAIN_NAME;
+    if (
+      context.DOMAIN_NAME_OVERRIDE &&
+      context.DOMAIN_NAME_OVERRIDE !== "<YOUR_DOMAIN_NAME_OVERRIDE>"
+    ) {
+      domainName = context.DOMAIN_NAME_OVERRIDE;
+    }
     await twilioCreateScopedWebhook(
       client,
       conversationSid,
       userId,
-      context.DOMAIN_NAME_OVERRIDE || context.DOMAIN_NAME,
+      domainName,
       "api/line/outgoing"
     );
   }
