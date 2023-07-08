@@ -5,12 +5,14 @@
   "scripts": {
     "test": "tsc --noEmit",
     "start": "twilio-run --functions-folder dist/functions --assets-folder dist/assets",
-    "deploy": "twilio-run deploy --functions-folder dist/functions --assets-folder dist/assets",
+    "deploy": "twilio-run deploy --functions-folder dist/functions --assets-folder dist/assets --override-existing-project",
     "build": "tsc && npm run build:copy-assets && npm run build:copy-js-functions",
     "build:copy-assets": "copyfiles src/assets/* src/assets/**/* --up 2 --exclude **/*.ts dist/assets/",
     "build:copy-js-functions": "copyfiles src/functions/*.js src/functions/**/*.js --up 2 --exclude **/*.ts dist/functions/",
+    "install-serverless-plugin": "twilio plugins:install @twilio-labs/plugin-serverless@v2",
     "prestart": "npm run build",
-    "predeploy": "npm run build"
+    "predeploy": "npm run build",
+    "setup-environment": "node scripts/setup-environment.js"
   },
   "dependencies": {
     "@line/bot-sdk": "^7.5.2",
@@ -18,16 +20,16 @@
     "@twilio/mcs-client": "^0.6.1",
     "@twilio/runtime-handler": "1.2.5",
     "node-fetch": "2.6.7",
-    "request": "^2.88.2",
-    "request-promise-native": "^1.0.9",
-    "twilio": "^3.56",
-    "typescript": "4"
+    "twilio": "^3.56"
   },
   "devDependencies": {
     "@types/node": "^20.3.3",
     "@types/node-fetch": "^2.6.4",
     "copyfiles": "^2.2.0",
-    "twilio-run": "^3.5.2"
+    "shelljs": "^0.8.5",
+    "twilio-cli": "^5.5.0",
+    "twilio-run": "^3.5.2",
+    "typescript": "^5.1.6"
   },
   "engines": {
     "node": "16"
