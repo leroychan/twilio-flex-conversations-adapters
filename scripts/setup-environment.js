@@ -12,7 +12,11 @@ if (!process.argv[2]) {
 }
 const deployToEnvironment = process.argv[2];
 const environmentFile = `.env.${deployToEnvironment}`;
-
+console.log(`Environment Selected: ${deployToEnvironment}`);
+console.log(`Environment File (To Be Created): ${environmentFile}`);
 // -- Copy Environment Variable File from Example
-copyFile(EXAMPLE_ENVIRONMENT_FILE_NAME, environmentFile);
+const copyFileResult = copyFile(EXAMPLE_ENVIRONMENT_FILE_NAME, environmentFile);
+if (copyFileResult) {
+  console.log(`Environment File (${environmentFile}) Successfully Created...`);
+}
 updateEnvironmentVariables(environmentFile);

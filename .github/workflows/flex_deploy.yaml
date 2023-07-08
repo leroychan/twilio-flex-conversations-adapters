@@ -35,4 +35,4 @@ jobs:
           npm install
           npm run install-serverless-plugin
           npm run setup-environment $ENVIRONMENT
-          npm run deploy-env $ENVIRONMENT
+          npm run deploy-env

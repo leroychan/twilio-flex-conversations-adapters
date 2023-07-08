@@ -38,15 +38,6 @@ exports.updateEnvironmentVariables = (destinationFileName) => {
       VIBER_AUTH_TOKEN,
       VIBER_STUDIO_FLOW_SID,
     } = process.env;
-    // -- Debug
-    console.log("--- Start Debug ---");
-    console.log("LINE_CHANNEL_ID", LINE_CHANNEL_ID);
-    console.log("Total Env Variables", Object.keys(process.env).length);
-    console.log("Loop:");
-    for (const obj of Object.keys(process.env)) {
-      console.log(obj);
-    }
-    console.log("--- End Debug ---");
     if (LINE_CHANNEL_ID) {
       shell.sed(
         "-i",
