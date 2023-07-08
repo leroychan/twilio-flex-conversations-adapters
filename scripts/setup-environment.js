@@ -1,7 +1,4 @@
-const shell = require("shelljs");
+// Import Libraries
+const { getEnvironmentVariables } = require("./common");
 
-const workspace_raw = shell.exec("twilio api:taskrouter:v1:workspaces:list", {
-  silent: true,
-});
-
-console.log(workspace_raw);
+console.log(getEnvironmentVariables);
