@@ -1,5 +1,7 @@
 // Import Libraries
 const shell = require("shelljs");
+const fs = require("fs");
+const dotenv = require("dotenv");
 
 exports.copyFile = (
   exampleFileName = ".env.example",
@@ -20,6 +22,10 @@ exports.copyFile = (
       return false;
     }
     shell.cp(exampleFileName, destinationFileName);
+    console.log(
+      "copyFile",
+      `Successfully copied ${exampleFileName} into ${destinationFileName}`
+    );
     return true;
   } catch (e) {
     console.log("Error in copyFile:");
@@ -28,68 +34,150 @@ exports.copyFile = (
   }
 };
 
-exports.updateEnvironmentVariables = (destinationFileName) => {
+exports.parseExampleEnvironmentVariables = (
+  exampleEnvironmentFileName = ".env.example"
+) => {
   try {
-    const {
-      LINE_CHANNEL_ID,
-      LINE_CHANNEL_SECRET,
-      LINE_CHANNEL_ACCESS_TOKEN,
-      LINE_STUDIO_FLOW_SID,
-      VIBER_AUTH_TOKEN,
-      VIBER_STUDIO_FLOW_SID,
-    } = process.env;
-    if (LINE_CHANNEL_ID) {
-      shell.sed(
-        "-i",
-        /<YOUR_LINE_CHANNEL_ID>/g,
-        `${LINE_CHANNEL_ID}`,
-        destinationFileName
-      );
+    // Step 1: Set Variables
+    const defaultTwilioVariables = ["ACCOUNT_SID", "AUTH_TOKEN"];
+    let context = {
+      twilio: {},
+      conversations_adapters: {},
+      env_requires_replacement: {},
+      env_error: {},
+      env_raw: {},
+    };
+
+    // Step 2: Parse Example Environment Variables into JSON Object
+    const exampleEnvironmentVariables = dotenv.parse(
+      fs.readFileSync(exampleEnvironmentFileName)
+    );
+    context.env_raw = {
+      ...exampleEnvironmentVariables,
+    };
+
+    // Step 3: Process Environment Variables and Set into Context
+    for (const jsonKey of Object.keys(exampleEnvironmentVariables)) {
+      // Set Default Twilio Variables into Context
+      if (defaultTwilioVariables.includes(jsonKey)) {
+        context.twilio[jsonKey] = exampleEnvironmentVariables[jsonKey];
+      }
+      // Set Variables That Requires Replacement into Context - Value to confirm with naming convention of "<YOUR_[ENV_VARIABLE_NAME]>"
+      else if (
+        exampleEnvironmentVariables[jsonKey].startsWith(`<YOUR_${jsonKey}>`)
+      ) {
+        context.env_requires_replacement[jsonKey] =
+          exampleEnvironmentVariables[jsonKey];
+      }
+      // Set Ready-to-Use Variables into Context
+      else if (exampleEnvironmentVariables[jsonKey]) {
+        context.conversations_adapters[jsonKey] =
+          exampleEnvironmentVariables[jsonKey];
+      }
+      // Set Error/Empty Variables into Context
+      else {
+        context.env_error[jsonKey] = exampleEnvironmentVariables[jsonKey];
+      }
     }
-    if (LINE_CHANNEL_SECRET) {
-      shell.sed(
-        "-i",
-        /<YOUR_LINE_CHANNEL_SECRET>/g,
-        `${LINE_CHANNEL_SECRET}`,
-        destinationFileName
-      );
+    // Step 4: Return Context
+    return context;
+  } catch (err) {
+    console.log("Error in parseExampleEnvironments:");
+    console.log(err);
+    return false;
+  }
+};
+
+exports.replaceEnvironmentVariables = (context, destinationFileName) => {
+  try {
+    if (
+      context &&
+      context.env_requires_replacement &&
+      Object.keys(context.env_requires_replacement).length > 0
+    ) {
+      // Process Environment Variables That Requires Replacement
+      for (const key of Object.keys(context.env_requires_replacement)) {
+        const regexExpression = new RegExp(`<YOUR_${key}>`, g);
+        if (process.env[key]) {
+          // Replace Variable
+          shell.sed(
+            "-i",
+            regexExpression,
+            `${process.env[key]}`,
+            destinationFileName
+          );
+          context.conversations_adapters[key] = process.env[key];
+          // Remove From Context
+          delete context.env_requires_replacement[key];
+        }
+      }
     }
-    if (LINE_CHANNEL_ACCESS_TOKEN) {
-      shell.sed(
-        "-i",
-        /<YOUR_LINE_CHANNEL_ACCESS_TOKEN>/g,
-        `${LINE_CHANNEL_ACCESS_TOKEN}`,
-        destinationFileName
-      );
-    }
-    if (LINE_STUDIO_FLOW_SID) {
-      shell.sed(
-        "-i",
-        /<YOUR_LINE_STUDIO_FLOW_SID>/g,
-        `${LINE_STUDIO_FLOW_SID}`,
-        destinationFileName
-      );
-    }
-    if (VIBER_AUTH_TOKEN) {
-      shell.sed(
-        "-i",
-        /<YOUR_VIBER_AUTH_TOKEN>/g,
-        `${VIBER_AUTH_TOKEN}`,
-        destinationFileName
-      );
-    }
-    if (VIBER_STUDIO_FLOW_SID) {
-      shell.sed(
-        "-i",
-        /<YOUR_VIBER_STUDIO_FLOW_SID>/g,
-        `${VIBER_STUDIO_FLOW_SID}`,
-        destinationFileName
-      );
-    }
-    return true;
-  } catch (e) {
+    return context;
+  } catch (err) {
     console.log("Error in updateEnvironmentVariables:");
-    console.log(e);
+    console.log(err);
+    return false;
+  }
+};
+
+exports.printContextVariables = (context, headerMessage = "Context") => {
+  try {
+    console.log(`======== ${headerMessage} =======`);
+    console.log("");
+    // Print Twilio Default Variables
+    if (context.twilio && Object.keys(context.twilio).length > 0) {
+      console.log("=== Twilio Default Variables ===");
+      for (const key of Object.keys(context.twilio)) {
+        console.log(`${key}: ${context.twilio[key]}`);
+      }
+      console.log("");
+      console.log(
+        `Note: ACCOUNT_SID and AUTH_TOKEN can be empty as it will be auto-populated during deployment`
+      );
+      console.log("");
+    }
+    // Print Flex Default Variables
+    if (context.flex && Object.keys(context.flex).length > 0) {
+      console.log("=== Flex Default Variables ===");
+      for (const key of Object.keys(context.flex)) {
+        console.log(`${key}: ${context.flex[key]}`);
+      }
+      console.log("");
+    }
+    // Print Conversation Adapters Ready-to-Use Variables
+    if (
+      context.conversations_adapters &&
+      Object.keys(context.conversations_adapters).length > 0
+    ) {
+      console.log("=== Conversations Adapters: Ready-to-Use Variables ===");
+      for (const key of Object.keys(context.conversations_adapters)) {
+        console.log(`${key}: ${context.conversations_adapters[key]}`);
+      }
+      console.log("");
+    }
+    // Print Conversation Adapters Need-to-Replace Variables
+    if (
+      context.env_requires_replacement &&
+      Object.keys(context.env_requires_replacement).length > 0
+    ) {
+      console.log("=== Conversations Adapters: Need-To-Replace Variables ===");
+      for (const key of Object.keys(context.env_requires_replacement)) {
+        console.log(`${key}: ${context.env_requires_replacement[key]}`);
+      }
+      console.log("");
+    }
+    // Print Error Variables
+    if (context.env_error && Object.keys(context.env_error).length > 0) {
+      console.log("=== Conversations Adapters: Error Variables ===");
+      for (const key of Object.keys(context.env_error)) {
+        console.log(`${key}: ${context.env_error[key]}`);
+      }
+      console.log("");
+    }
+    console.log(`======== End of ${headerMessage} ========`);
+  } catch (err) {
+    console.log("Error in printContextVariables:");
+    console.log(err);
     return false;
   }
 };

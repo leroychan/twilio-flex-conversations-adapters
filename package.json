@@ -27,6 +27,7 @@
     "@types/node": "^20.3.3",
     "@types/node-fetch": "^2.6.4",
     "copyfiles": "^2.2.0",
+    "dotenv": "^16.3.1",
     "shelljs": "^0.8.5",
     "twilio-cli": "^5.5.0",
     "twilio-run": "^3.5.2",

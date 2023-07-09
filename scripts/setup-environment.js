@@ -1,22 +1,33 @@
 // Import Libraries
-const { updateEnvironmentVariables, copyFile } = require("./common");
+const {
+  copyFile,
+  parseExampleEnvironmentVariables,
+  replaceEnvironmentVariables,
+  printContextVariables,
+} = require("./common");
 
 // Set Variables
 const EXAMPLE_ENVIRONMENT_FILE_NAME = ".env.example";
 
-// Step 1: Process Environment Variable File
-// -- Check: Environment Variable Passed
+// Step 1: Check Environment Variable Passed
 if (!process.argv[2]) {
   console.log(`Error in setup-environment: No Environment Detected`);
   return false;
 }
+
+// Step 2: Create ".env" Environment File
 const deployToEnvironment = process.argv[2];
 const environmentFile = `.env.${deployToEnvironment}`;
 console.log(`Environment Selected: ${deployToEnvironment}`);
 console.log(`Environment File (To Be Created): ${environmentFile}`);
-// -- Copy Environment Variable File from Example
-const copyFileResult = copyFile(EXAMPLE_ENVIRONMENT_FILE_NAME, environmentFile);
-if (copyFileResult) {
-  console.log(`Environment File (${environmentFile}) Successfully Created...`);
-}
-updateEnvironmentVariables(environmentFile);
+
+// Step 3: Copy Environment Variable File from Example
+copyFile(EXAMPLE_ENVIRONMENT_FILE_NAME, environmentFile);
+
+// Step 4: Parse Example Environment Variable and Get Context
+let context = parseExampleEnvironmentVariables(EXAMPLE_ENVIRONMENT_FILE_NAME);
+printContextVariables(context, "Parse Example ENV File");
+
+// Step 5: Replace Environment Variable File with Actual Values
+context = replaceEnvironmentVariables(context, environmentFile);
+printContextVariables(context, "Replace ENV Variables");
