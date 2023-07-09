@@ -34,5 +34,11 @@ jobs:
         run: |
           npm install
           npm run install-serverless-plugin
+      - name: Setup Environment
+        id: setup-environment
+        run: |
           npm run setup-environment $ENVIRONMENT
+      - name: Deploy to Environment
+        id: deploy-to-environment
+        run: |
           npm run deploy-env

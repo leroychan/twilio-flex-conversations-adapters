@@ -122,7 +122,7 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
 
 exports.printContextVariables = (context, headerMessage = "Context") => {
   try {
-    console.log(`======== ${headerMessage} =======`);
+    console.log(`======== Start: ${headerMessage} =======`);
     console.log("");
     // Print Twilio Default Variables
     if (context.twilio && Object.keys(context.twilio).length > 0) {
@@ -165,6 +165,10 @@ exports.printContextVariables = (context, headerMessage = "Context") => {
         console.log(`${key}: ${context.env_requires_replacement[key]}`);
       }
       console.log("");
+      console.log(
+        `Note: These variables are not being replaced as no corresponding values (either in .env or Github Actions) have been found`
+      );
+      console.log("");
     }
     // Print Error Variables
     if (context.env_error && Object.keys(context.env_error).length > 0) {
@@ -174,7 +178,7 @@ exports.printContextVariables = (context, headerMessage = "Context") => {
       }
       console.log("");
     }
-    console.log(`======== End of ${headerMessage} ========`);
+    console.log(`======== End: ${headerMessage} ========`);
   } catch (err) {
     console.log("Error in printContextVariables:");
     console.log(err);

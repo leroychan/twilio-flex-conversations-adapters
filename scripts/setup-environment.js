@@ -26,8 +26,7 @@ copyFile(EXAMPLE_ENVIRONMENT_FILE_NAME, environmentFile);
 
 // Step 4: Parse Example Environment Variable and Get Context
 let context = parseExampleEnvironmentVariables(EXAMPLE_ENVIRONMENT_FILE_NAME);
-printContextVariables(context, "Parse Example ENV File");
 
 // Step 5: Replace Environment Variable File with Actual Values
 context = replaceEnvironmentVariables(context, environmentFile);
-printContextVariables(context, "Replace ENV Variables");
+printContextVariables(context, "Summary of Environment");
