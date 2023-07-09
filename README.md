@@ -1,6 +1,9 @@
 # Twilio Flex - Conversations Adapters
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue?style=flat-square&labelColor=black)](https://github.com/leroychan/twilio-flex-conversations-adapters/blob/master/LICENSE.md)[![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg?style=flat-square&labelColor=black)](https://prettier.io)
@@ -200,6 +203,8 @@ You will need the following before proceeding:
 After you have successfully deployed the Twilio Function, copy the the entire API path of `/api/line/incoming` and head to [LINE Developer Console](https://developers.line.biz/console/) to configure the webhook setting. You can find the webhook setting under `LINE Developer Console > Channel > Messaging API`.
 
 ![Flex 2.0 - Webhook](docs/flex2_webhook.png)
+
+Next, please navigate to `LINE Developer Console > Settings > Response settings` and disable `Chat`, `Greeting message` and `Auto-response messages`. Please ensure `Webhooks` is enabled.
 
 ---
 
