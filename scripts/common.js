@@ -97,7 +97,7 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
     ) {
       // Process Environment Variables That Requires Replacement
       for (const key of Object.keys(context.env_requires_replacement)) {
-        const regexExpression = new RegExp(`<YOUR_${key}>`, g);
+        const regexExpression = new RegExp(`<YOUR_${key}>`, "g");
         if (process.env[key]) {
           // Replace Variable
           shell.sed(
