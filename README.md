@@ -219,14 +219,16 @@ _Twilio Flex 2.0 - VIBER Channel_ is a custom channel connector to enable Viber 
 1. Create Viber developer account - https://developers.viber.com/
 2. Create a bot - https://partners.viber.com/account/create-bot-account
 3. Complete required fields and copy secure token
-4. Put token in `.env` file `VIBER_AUTH_TOKEN`
-5. Configure viber webhook
+4. Put token in `VIBER_AUTH_TOKEN` under GitHub - Environments - Secrets (GitHub Actions Deployment) or within `.env` file `VIBER_AUTH_TOKEN` (Local Deployment)
+5. Configure Viber webhook
 
 #### Viber Webhook
 
-Once the Twilio serverless function is deployed, obtain the host name and set a POST to Viber, e.g.
+Once the Twilio serverless function is deployed, obtain the host name and send a POST request to Viber's Webhook URL (`https://chatapi.viber.com/pa/set_webhook`)
 
-Note: Remember to set the `X-Viber-Auth-Token` header to the previously obtained token in step 3
+Note: Remember to set the `X-Viber-Auth-Token` HTTP header to the previously obtained token in step 3
+
+URL:
 
 ```json
 {
