@@ -7,6 +7,11 @@ on:
         required: true
         type: environment
         description: "Environment to use for deployment"
+      deploy_icons_plugin:
+        required: true
+        type: boolean
+        default: false
+        description: Deploy UI Icons Plugin?
 
 jobs:
   deploy-serverless:
@@ -42,3 +47,32 @@ jobs:
         id: deploy-to-environment
         run: |
           npm run deploy-env
+
+  deploy-icons-plugin:
+    if: |
+      github.event.inputs.deploy_icons_plugin == 'true'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    env:
+      ENVIRONMENT: ${{ github.event.inputs.environment }}
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+      TWILIO_API_KEY: ${{ secrets.TWILIO_API_KEY }}
+      TWILIO_API_SECRET: ${{ secrets.TWILIO_API_SECRET }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js v16
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+      - name: Install NPM packages
+        id: install-npm
+        working-directory: plugin-conversations-icon
+        run: |
+          npm install
+          npm run install-flex-plugin
+      - name: Deploy to Environment
+        id: deploy-to-environment
+        working-directory: plugin-conversations-icon
+        run: |
+          npm run deploy -- --changelog="Deploy from CI/CD for commit ${{ github.sha }}"
+          npm run release -- --name="Release from CI/CD for commit ${{ github.sha }}" --description="Release from CI/CD for commit ${{ github.sha }}"
