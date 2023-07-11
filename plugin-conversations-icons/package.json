@@ -1,0 +1,25 @@
+{
+  "name": "plugin-conversations-icons",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "flex-plugin pre-script-check",
+    "deploy": "twilio flex:plugins:deploy",
+    "release": "twilio flex:plugins:release --plugin ${npm_package_name}@${npm_package_version}",
+    "install-flex-plugin": "twilio plugins:install @twilio-labs/plugin-flex@6.1.2"
+  },
+  "dependencies": {
+    "@twilio-paste/core": "^10.14.0",
+    "@twilio-paste/icons": "^5.7.0",
+    "@twilio/flex-plugin-scripts": "6.1.2",
+    "prop-types": "^15.7.2",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
+  },
+  "devDependencies": {
+    "@twilio/flex-ui": "2.3.2",
+    "react-test-renderer": "17.0.2",
+    "twilio-cli": "^5.5.0",
+    "typescript": "^4"
+  }
+}
