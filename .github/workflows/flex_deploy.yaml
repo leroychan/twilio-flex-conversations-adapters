@@ -66,13 +66,13 @@ jobs:
           node-version: "16"
       - name: Install NPM packages
         id: install-npm
-        working-directory: plugin-conversations-icon
+        working-directory: plugin-conversations-icons
         run: |
           npm install
           npm run install-flex-plugin
       - name: Deploy to Environment
         id: deploy-to-environment
-        working-directory: plugin-conversations-icon
+        working-directory: plugin-conversations-icons
         run: |
           npm run deploy -- --changelog="Deploy from CI/CD for commit ${{ github.sha }}"
           npm run release -- --name="Release from CI/CD for commit ${{ github.sha }}" --description="Release from CI/CD for commit ${{ github.sha }}"
