@@ -71,6 +71,7 @@ jobs:
         id: install-npm
         working-directory: plugin-conversations-icons
         run: |
+          npm install skip-postinstall
           npm install
           npm run install-flex-plugin
       - name: Deploy to Environment
