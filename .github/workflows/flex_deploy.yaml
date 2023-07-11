@@ -36,15 +36,18 @@ jobs:
           node-version: "16"
       - name: Install NPM packages
         id: install-npm
+        working-directory: serverless-functions
         run: |
           npm install
           npm run install-serverless-plugin
       - name: Setup Environment
         id: setup-environment
+        working-directory: serverless-functions
         run: |
           npm run setup-environment $ENVIRONMENT
       - name: Deploy to Environment
         id: deploy-to-environment
+        working-directory: serverless-functions
         run: |
           npm run deploy-env
 
