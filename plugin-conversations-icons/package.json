@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "flex-plugin pre-script-check",
     "deploy": "twilio flex:plugins:deploy",
     "release": "twilio flex:plugins:release --plugin ${npm_package_name}@${npm_package_version}",
     "install-flex-plugin": "twilio plugins:install @twilio-labs/plugin-flex@6.1.2",
