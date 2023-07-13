@@ -23,8 +23,6 @@ _**Conversations Adapters**_ is a comprehensive framework designed to facilitate
 
 Conversations Adapters: [Conversations Adapters Documentation Page](https://leroychan.github.io/twilio-flex-conversations-adapters)
 
----
-
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -50,8 +48,6 @@ Conversations Adapters: [Conversations Adapters Documentation Page](https://lero
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
-
----
 
 ## License
 
