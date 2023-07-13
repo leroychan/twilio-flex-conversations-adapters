@@ -210,7 +210,8 @@ export const viberSendMedia = async (
   context: Context<ViberTypes.ViberContext>,
   userId: string,
   type: ViberTypes.ViberMessageType,
-  contentUrl: string
+  contentUrl: string,
+  size?: number
 ) => {
   try {
     // Get viber client
@@ -220,6 +221,7 @@ export const viberSendMedia = async (
       text: "Attachment",
       media: contentUrl,
       sender: { name: "Twilio" },
+      ...(size && { size }),
     };
 
     // Send message
