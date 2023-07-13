@@ -102,12 +102,22 @@ export const handler: ServerlessFunctionSignature<
           return callback("Unable to get temporary URL for image");
         }
         // -- Send to Viber
-        await viberSendMedia(
-          context,
-          decodeURIComponent(event.user_id),
-          mediaType,
-          mediaResource.links.content_direct_temporary
-        );
+        if (mediaType == ViberMessageType.VIDEO) {
+          await viberSendMedia(
+            context,
+            decodeURIComponent(event.user_id),
+            mediaType,
+            mediaResource.links.content_direct_temporary,
+            mediaResource.size
+          );
+        } else {
+          await viberSendMedia(
+            context,
+            decodeURIComponent(event.user_id),
+            mediaType,
+            mediaResource.links.content_direct_temporary
+          );
+        }
       }
     }
 

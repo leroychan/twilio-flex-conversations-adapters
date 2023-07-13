@@ -11,6 +11,7 @@ export type TwilioMediaResponse = {
   links: {
     content_direct_temporary: string;
   };
+  size?: number;
 };
 
 /*
