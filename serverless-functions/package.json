@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "test": "tsc --noEmit",
-    "start": "twilio-run --functions-folder dist/functions --assets-folder dist/assets",
+    "start": "twilio serverless:start --functions-folder dist/functions --assets-folder dist/assets",
     "deploy": "twilio serverless:deploy --functions-folder dist/functions --assets-folder dist/assets --override-existing-project --runtime node16",
     "deploy-env": "npm run deploy -- --env \".env.$ENVIRONMENT\"",
     "build": "tsc && npm run build:copy-assets && npm run build:copy-js-functions",
