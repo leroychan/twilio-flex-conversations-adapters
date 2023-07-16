@@ -16,6 +16,7 @@ _**Conversations Adapters**_ is a comprehensive framework designed to facilitate
 
 ## Pre-Built Connectors
 
+- Instagram
 - LINE
 - Viber
 
