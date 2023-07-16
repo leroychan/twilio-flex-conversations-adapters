@@ -85,8 +85,10 @@ export default class ConversationsIconsPlugin extends FlexPlugin {
 
     // Channel: Google Chat
     const chatChannelGoogleChat =
-      Flex.DefaultTaskChannels.createChatTaskChannel("gchat", (task) =>
-        checkChannel(task, "gchat")
+      Flex.DefaultTaskChannels.createChatTaskChannel(
+        "gchat",
+        (task) =>
+          checkChannel(task, "gchat") || checkChannel(task, "googlechat")
       );
     chatChannelGoogleChat.icons = {
       active: <GoogleChatIcon />,
