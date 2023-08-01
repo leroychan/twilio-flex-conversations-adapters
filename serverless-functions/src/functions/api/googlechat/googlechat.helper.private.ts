@@ -302,23 +302,23 @@ export const getGoogleChatClient = async (
 ) => {
   try {
     // Step 1: Get Google Service Account Credentials
-    const googleChatCredentialsFileName = 'googlechat-credentials.json"';
+    const googleChatCredentialsFileName = "/googlechat-credentials.json";
     let credentials;
     console.log(Runtime.getAssets());
     console.log(Object.keys(Runtime.getAssets()).length);
     console.log(
-      Object.keys(Runtime.getAssets()[`/${googleChatCredentialsFileName}`])
+      Object.keys(Runtime.getAssets()[googleChatCredentialsFileName])
     );
     console.log("Inside 0");
     if (
       Object.keys(Runtime.getAssets()).length !== 0 &&
-      Object.keys(Runtime.getAssets()[`/${googleChatCredentialsFileName}`])
-        .length !== 0
+      Object.keys(Runtime.getAssets()[googleChatCredentialsFileName]).length !==
+        0
     ) {
       console.log("Inside 1");
       // -- Priority 1: Use Private Asset File
       const rawCredentials =
-        Runtime.getAssets()[`/${googleChatCredentialsFileName}`].open;
+        Runtime.getAssets()[googleChatCredentialsFileName].open;
       console.log("Inside 2");
       const rawCredentialsContent = rawCredentials();
       console.log("Inside 3");
