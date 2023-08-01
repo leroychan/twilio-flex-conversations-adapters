@@ -306,6 +306,9 @@ export const getGoogleChatClient = async (
     let credentials;
     console.log(Runtime.getAssets());
     console.log(Object.keys(Runtime.getAssets()).length);
+    console.log(
+      Object.keys(Runtime.getAssets()[`/${googleChatCredentialsFileName}`])
+    );
     console.log("Inside 0");
     if (
       Object.keys(Runtime.getAssets()).length !== 0 &&
