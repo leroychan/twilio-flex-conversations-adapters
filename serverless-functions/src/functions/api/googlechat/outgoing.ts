@@ -7,19 +7,23 @@ import {
   ServerlessFunctionSignature,
 } from "@twilio-labs/serverless-runtime-types/types";
 
-import * as Helper from "./instagram.helper.private";
+import * as Helper from "./googlechat.helper.private";
 import * as Util from "../common/common.helper.private";
-import * as InstagramTypes from "./instagram_types.private";
+import * as GoogleChatTypes from "./googlechat_types.private";
 
 // Load Libraries
-const { InstagramMessageType } = <typeof InstagramTypes>(
-  require(Runtime.getFunctions()["api/instagram/instagram_types"].path)
+const { GoogleChatMessageType } = <typeof GoogleChatTypes>(
+  require(Runtime.getFunctions()["api/googlechat/googlechat_types"].path)
 );
-const { instagramSendTextMessage, instagramSendMediaMessage } = <typeof Helper>(
-  require(Runtime.getFunctions()["api/instagram/instagram.helper"].path)
+const {
+  getGoogleChatClient,
+  googleChatSendTextMessage,
+  googleChatSendMediaMessage,
+} = <typeof Helper>(
+  require(Runtime.getFunctions()["api/googlechat/googlechat.helper"].path)
 );
 
-const { twilioGetMediaResource } = <typeof Util>(
+const { twilioGetMediaResource, twilioGetConversation } = <typeof Util>(
   require(Runtime.getFunctions()["api/common/common.helper"].path)
 );
 
@@ -34,24 +38,56 @@ type IncomingMessageType = {
   Media: string;
   Body: string;
   ChatServiceSid: string;
+  ConversationSid: string;
 };
 
 export const handler: ServerlessFunctionSignature<
-  InstagramTypes.InstagramContext,
+  GoogleChatTypes.GoogleChatContext,
   IncomingMessageType
 > = async (context, event, callback: ServerlessCallback) => {
-  console.log("event received - /api/instagram/outgoing: ", event);
+  console.log("event received - /api/googlechat/outgoing: ", event);
 
   // Process Only Agent Messages
   if (event.Source === "SDK") {
-    // Parse Type of Messages
+    // -- Debug
     console.log("---Start of Raw Event---");
     console.log(event);
     console.log(`RAW event.user_id: ${event.user_id}`);
     console.log("---End of Raw Event---");
+    // -- Initialise Google Chat Resoruces
+    const chatClient = await getGoogleChatClient(context);
+    const conversationResource = await twilioGetConversation(
+      context.getTwilioClient(),
+      event.ConversationSid
+    );
+    if (!conversationResource) {
+      return callback(null, {
+        success: false,
+      });
+    }
+    let preEngagementData: any = {};
+    try {
+      preEngagementData = JSON.parse(
+        conversationResource.attributes
+      ).pre_engagement_data;
+    } catch (err) {
+      return callback(null, {
+        success: false,
+      });
+    }
+    const googleChatSpaceName = preEngagementData.spaceName;
+    if (!googleChatSpaceName) {
+      return callback(null, {
+        success: false,
+      });
+    }
     if (!event.Media) {
       // Agent Message Type: Text
-      await instagramSendTextMessage(context, event.user_id, event.Body);
+      await googleChatSendTextMessage(
+        chatClient,
+        googleChatSpaceName,
+        event.Body
+      );
     } else {
       // Agent Message Type: Media
       // -- Handle Multiple Media object(s)
@@ -61,67 +97,39 @@ export const handler: ServerlessFunctionSignature<
         console.log(`Media SID: ${media.Sid}`);
         console.log(`Chat Service SID: ${event.ChatServiceSid}`);
         // -- Obtain Media Type
-        let mediaType: InstagramTypes.InstagramMessageType;
+        let mediaType: GoogleChatTypes.GoogleChatMessageType;
 
         switch (media.ContentType) {
           case "image/png":
-            mediaType = InstagramMessageType.IMAGE;
+            mediaType = GoogleChatMessageType.IMAGE;
             break;
           case "image/jpeg":
-            mediaType = InstagramMessageType.IMAGE;
+            mediaType = GoogleChatMessageType.IMAGE;
             break;
           case "image/jpg":
-            mediaType = InstagramMessageType.IMAGE;
+            mediaType = GoogleChatMessageType.IMAGE;
             break;
           case "image/gif":
-            mediaType = InstagramMessageType.IMAGE;
-            break;
-          case "video/mp4":
-            mediaType = InstagramMessageType.VIDEO;
-            break;
-          case "video/ogg":
-            mediaType = InstagramMessageType.VIDEO;
-            break;
-          case "video/x-msvideo":
-            mediaType = InstagramMessageType.VIDEO;
-            break;
-          case "video/quicktime":
-            mediaType = InstagramMessageType.VIDEO;
-            break;
-          case "video/webm":
-            mediaType = InstagramMessageType.VIDEO;
-            break;
-          case "application/vnd.americandynamics.acc":
-            mediaType = InstagramMessageType.AUDIO;
-            break;
-          case "audio/mp4":
-            mediaType = InstagramMessageType.AUDIO;
-            break;
-          case "audio/wav":
-            mediaType = InstagramMessageType.AUDIO;
+            mediaType = GoogleChatMessageType.IMAGE;
             break;
           default:
             return callback("File type is not supported");
         }
 
-        // -- Retrieve Temporary URL (Public) of Twilio Media Resource
+        // // -- Retrieve Temporary URL (Public) of Twilio Media Resource
         const mediaResource = await twilioGetMediaResource(
           { accountSid: context.ACCOUNT_SID, authToken: context.AUTH_TOKEN },
           event.ChatServiceSid,
           media.Sid
         );
-        if (
-          !mediaResource ||
-          !mediaResource.links ||
-          !mediaResource.links.content_direct_temporary
-        ) {
+        if (!mediaResource?.links?.content_direct_temporary) {
           return callback("Unable to get temporary URL for image");
         }
-        // -- Send to Instagram
-        await instagramSendMediaMessage(
-          context,
-          event.user_id,
-          mediaType,
+        // // -- Send to Google Chat
+        await googleChatSendMediaMessage(
+          chatClient,
+          googleChatSpaceName,
+          media.Filename,
           mediaResource.links.content_direct_temporary
         );
       }

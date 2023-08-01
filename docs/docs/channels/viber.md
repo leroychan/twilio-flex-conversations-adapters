@@ -53,6 +53,6 @@ Ensure that you have obtained **all** the necessary values for the variables sta
      }
      ```
 
-## Known Limitation
+## Known Limitations
 
 - Unable to verify Viber's webhook signature as Twilio Serverless Functions do not support BigInt (`message_token` attribute of the webhook payload)
