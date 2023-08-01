@@ -132,6 +132,7 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
             try {
               const parsedContentJSON = JSON.parse(content);
               const contentJSON = JSON.stringify(parsedContentJSON);
+              const directoryPath = path.join(__dirname, "..", "src", "assets");
               const filePath = path.join(
                 __dirname,
                 "..",
@@ -139,8 +140,8 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
                 "assets",
                 `${adapterName}${suffix}`
               );
-              if (!fs.existsSync(filePath)) {
-                fs.mkdirSync(filePath, { recursive: true });
+              if (!fs.existsSync(directoryPath)) {
+                fs.mkdirSync(directoryPath, { recursive: true });
               }
               fs.writeFileSync(filePath, contentJSON);
               console.log(
