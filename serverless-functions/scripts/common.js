@@ -132,7 +132,6 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
             try {
               const parsedContentJSON = JSON.parse(content);
               const contentJSON = JSON.stringify(parsedContentJSON);
-              console.log("Current directory:", __dirname);
               const filePath = path.join(
                 __dirname,
                 "..",
