@@ -247,3 +247,25 @@ export const twilioCreateScopedWebhook = async (
     return false;
   }
 };
+
+/*
+ * Twilio - Get Conversation
+ */
+export const twilioGetConversation = async (
+  client: twilio.Twilio,
+  conversationSid: string
+) => {
+  try {
+    const result = await client.conversations
+      .conversations(conversationSid)
+      .fetch();
+    if (result.sid) {
+      return result;
+    } else {
+      return false;
+    }
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
