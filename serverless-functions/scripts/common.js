@@ -132,7 +132,7 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
               const parsedContentJSON = JSON.parse(content);
               const contentJSON = JSON.stringify(parsedContentJSON);
               fs.writeFileSync(
-                `./serverless-functions/src/assets/${adapterName}${suffix}`,
+                `./src/assets/${adapterName}${suffix}`,
                 contentJSON
               );
               console.log(
