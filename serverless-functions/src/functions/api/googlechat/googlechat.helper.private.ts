@@ -302,10 +302,11 @@ export const getGoogleChatClient = async (
 ) => {
   try {
     // Step 1: Get Google Service Account Credentials
-    const rawCredentials = context.GOOGLECHAT_SERVICE_ACCOUNT_KEY_BASE64;
-    const credentials = JSON.parse(
-      Buffer.from(rawCredentials, "base64").toString("utf-8")
-    );
+    const rawCredentials =
+      Runtime.getAssets()[context.GOOGLECHAT_SERVICE_ACCOUNT_FILENAME].open;
+    const rawCredentialsContent = rawCredentials();
+
+    const credentials = JSON.parse(rawCredentialsContent);
 
     // Step 2: Get Chat Client
     const auth = new google.auth.GoogleAuth({
