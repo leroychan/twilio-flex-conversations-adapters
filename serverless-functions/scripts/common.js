@@ -131,6 +131,7 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
             try {
               const parsedContentJSON = JSON.parse(content);
               const contentJSON = JSON.stringify(parsedContentJSON);
+              console.log("Current directory:", __dirname);
               fs.writeFileSync(
                 `./src/assets/${adapterName}${suffix}`,
                 contentJSON
