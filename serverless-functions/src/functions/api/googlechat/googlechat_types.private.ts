@@ -2,7 +2,7 @@ import { chat_v1 } from "googleapis";
 
 export type GoogleChatContext = {
   GOOGLECHAT_STUDIO_FLOW_SID: string;
-  GOOGLECHAT_SERVICE_ACCOUNT_FILENAME: string;
+  GOOGLECHAT_SERVICE_ACCOUNT_KEY_BASE64: string;
   ACCOUNT_SID: string;
   AUTH_TOKEN: string;
   DOMAIN_NAME_OVERRIDE: string;

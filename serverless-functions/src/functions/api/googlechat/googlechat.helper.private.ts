@@ -302,16 +302,26 @@ export const getGoogleChatClient = async (
 ) => {
   try {
     // Step 1: Get Google Service Account Credentials
-    console.log(Runtime.getAssets());
-    console.log(
-      Runtime.getAssets()[`/${context.GOOGLECHAT_SERVICE_ACCOUNT_FILENAME}`]
-    );
-    const rawCredentials =
-      Runtime.getAssets()[`/${context.GOOGLECHAT_SERVICE_ACCOUNT_FILENAME}`]
-        .open;
-    const rawCredentialsContent = rawCredentials();
-
-    const credentials = JSON.parse(rawCredentialsContent);
+    const googleChatCredentialsFileName = 'googlechat-credentials.json"';
+    let credentials;
+    if (
+      Object.keys(Runtime.getAssets()).length !== 0 &&
+      Object.keys(Runtime.getAssets()[`/${googleChatCredentialsFileName}`])
+        .length !== 0
+    ) {
+      // -- Priority 1: Use Private Asset File
+      const rawCredentials =
+        Runtime.getAssets()[`/${googleChatCredentialsFileName}`].open;
+      const rawCredentialsContent = rawCredentials();
+      credentials = JSON.parse(rawCredentialsContent);
+    } else {
+      // -- Priority 2: Use Environment Variable
+      // -- Mainly for local development as environment variable in Twilio Functions cannot exceed 255 characters
+      const rawCredentials = context.GOOGLECHAT_SERVICE_ACCOUNT_KEY_BASE64;
+      credentials = JSON.parse(
+        Buffer.from(rawCredentials, "base64").toString("utf-8")
+      );
+    }
 
     // Step 2: Get Chat Client
     const auth = new google.auth.GoogleAuth({

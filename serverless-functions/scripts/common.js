@@ -62,7 +62,7 @@ exports.parseExampleEnvironmentVariables = (
       if (defaultTwilioVariables.includes(jsonKey)) {
         context.twilio[jsonKey] = exampleEnvironmentVariables[jsonKey];
       }
-      // Set Variables That Requires Replacement into Context - Value to confirm with naming convention of "<YOUR_[ENV_VARIABLE_NAME]>"
+      // Set Variables That Requires Replacement into Context - Value to conform with naming convention of "<YOUR_[ENV_VARIABLE_NAME]>"
       else if (
         exampleEnvironmentVariables[jsonKey].startsWith(`<YOUR_${jsonKey}>`)
       ) {
@@ -98,7 +98,7 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
       // Process Environment Variables That Requires Replacement
       for (const key of Object.keys(context.env_requires_replacement)) {
         const regexExpression = new RegExp(`<YOUR_${key}>`, "g");
-        if (process.env[key]) {
+        if (process.env[key] && process.env[key].length <= 255) {
           // Replace Variable
           shell.sed(
             "-i",
@@ -109,6 +109,62 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
           context.conversations_adapters[key] = process.env[key];
           // Remove From Context
           delete context.env_requires_replacement[key];
+        } else if (process.env[key] && process.env[key].length >= 255) {
+          // Twilio Functions only allow a maximum of 255 characters for it's environment variable
+          // Supports only base64 encoded JSON - will write it to a private Asset file in Twilio Functions
+          // -- Set Variables
+          const splitVariableName = key.split("_");
+          const adapterName = splitVariableName[0].toLowerCase();
+          const suffix = "-credentials.json";
+          // -- Check if variable's value is base64
+          const base64RegExp =
+            /^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})$/;
+          const isBase64 = base64RegExp.test(process.env[key]);
+          if (isBase64) {
+            const content = Buffer.from(process.env[key], "base64").toString(
+              "utf-8"
+            );
+            try {
+              const parsedContentJSON = JSON.parse(content);
+              const contentJSON = JSON.stringify(parsedContentJSON);
+              fs.writeFileSync(
+                `../src/assets/${adapterName}${suffix}`,
+                contentJSON
+              );
+              // Replace Variable
+              shell.sed(
+                "-i",
+                regexExpression,
+                `SUCCESSFULLY_CREATED_FILE_${adapterName}${suffix}`,
+                destinationFileName
+              );
+              context.conversations_adapters[key] = process.env[key];
+              // Remove From Context
+              delete context.env_requires_replacement[key];
+            } catch (err) {
+              // Replace Variable
+              shell.sed(
+                "-i",
+                regexExpression,
+                `VALUE_IS_MORE_THAN_255_CHARACTERS_AND_UNABLE_TO_PARSE_JSON`,
+                destinationFileName
+              );
+              context.conversations_adapters[key] = process.env[key];
+              // Remove From Context
+              delete context.env_requires_replacement[key];
+            }
+          } else {
+            // Replace Variable
+            shell.sed(
+              "-i",
+              regexExpression,
+              `VALUE_IS_MORE_THAN_255_CHARACTERS`,
+              destinationFileName
+            );
+            context.conversations_adapters[key] = process.env[key];
+            // Remove From Context
+            delete context.env_requires_replacement[key];
+          }
         }
       }
     }
