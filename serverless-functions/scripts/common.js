@@ -112,6 +112,9 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
         } else if (process.env[key] && process.env[key].length >= 255) {
           // Twilio Functions only allow a maximum of 255 characters for it's environment variable
           // Supports only base64 encoded JSON - will write it to a private Asset file in Twilio Functions
+          console.log(
+            `${key} has a value of more than 255 characters - processing now`
+          );
           // -- Set Variables
           const splitVariableName = key.split("_");
           const adapterName = splitVariableName[0].toLowerCase();
@@ -121,6 +124,7 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
             /^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})$/;
           const isBase64 = base64RegExp.test(process.env[key]);
           if (isBase64) {
+            console.log(`${key}'s content is formatted in base64`);
             const content = Buffer.from(process.env[key], "base64").toString(
               "utf-8"
             );
@@ -130,6 +134,9 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
               fs.writeFileSync(
                 `../src/assets/${adapterName}${suffix}`,
                 contentJSON
+              );
+              console.log(
+                `${key}'s content is successfully parsed and written into a JSON file under Twilio Assets`
               );
               // Replace Variable
               shell.sed(
