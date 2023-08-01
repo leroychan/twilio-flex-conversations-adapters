@@ -50,7 +50,8 @@ jobs:
         id: setup-environment
         working-directory: serverless-functions
         run: |
-          ls -al
+          ls -al src
+          ls -al src/assets
           npm run setup-environment $ENVIRONMENT
       - name: Deploy to Environment
         id: deploy-to-environment
