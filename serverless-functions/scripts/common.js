@@ -118,7 +118,7 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
           // -- Set Variables
           const splitVariableName = key.split("_");
           const adapterName = splitVariableName[0].toLowerCase();
-          const suffix = "-credentials.json";
+          const suffix = "-credentials.private.json";
           // -- Check if variable's value is base64
           const base64RegExp =
             /^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})$/;
