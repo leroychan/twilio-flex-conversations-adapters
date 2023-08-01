@@ -139,6 +139,9 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
                 "assets",
                 `${adapterName}${suffix}`
               );
+              if (!fs.existsSync(filePath)) {
+                fs.mkdirSync(filePath, { recursive: true });
+              }
               fs.writeFileSync(filePath, contentJSON);
               console.log(
                 `${key}'s content is successfully parsed and written into a JSON file under Twilio Assets`
