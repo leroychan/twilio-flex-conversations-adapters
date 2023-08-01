@@ -304,6 +304,8 @@ export const getGoogleChatClient = async (
     // Step 1: Get Google Service Account Credentials
     const googleChatCredentialsFileName = 'googlechat-credentials.json"';
     let credentials;
+    console.log(Runtime.getAssets());
+    console.log(Object.keys(Runtime.getAssets()).length);
     if (
       Object.keys(Runtime.getAssets()).length !== 0 &&
       Object.keys(Runtime.getAssets()[`/${googleChatCredentialsFileName}`])
