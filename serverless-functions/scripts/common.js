@@ -1,6 +1,7 @@
 // Import Libraries
 const shell = require("shelljs");
 const fs = require("fs");
+const path = require("path");
 const dotenv = require("dotenv");
 
 exports.copyFile = (
@@ -132,10 +133,14 @@ exports.replaceEnvironmentVariables = (context, destinationFileName) => {
               const parsedContentJSON = JSON.parse(content);
               const contentJSON = JSON.stringify(parsedContentJSON);
               console.log("Current directory:", __dirname);
-              fs.writeFileSync(
-                `./src/assets/${adapterName}${suffix}`,
-                contentJSON
+              const filePath = path.join(
+                __dirname,
+                "..",
+                "src",
+                "assets",
+                `${adapterName}${suffix}`
               );
+              fs.writeFileSync(filePath, contentJSON);
               console.log(
                 `${key}'s content is successfully parsed and written into a JSON file under Twilio Assets`
               );
