@@ -302,6 +302,10 @@ export const getGoogleChatClient = async (
 ) => {
   try {
     // Step 1: Get Google Service Account Credentials
+    console.log(Runtime.getAssets());
+    console.log(
+      Runtime.getAssets()[`/${context.GOOGLECHAT_SERVICE_ACCOUNT_FILENAME}`]
+    );
     const rawCredentials =
       Runtime.getAssets()[`/${context.GOOGLECHAT_SERVICE_ACCOUNT_FILENAME}`]
         .open;
