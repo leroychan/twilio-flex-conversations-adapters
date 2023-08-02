@@ -111,6 +111,31 @@ export const twilioCreateMessage = async (
 };
 
 /*
+ * Twilio - Create Message in Conversation
+ */
+export const twilioDeleteMessage = async (
+  client: twilio.Twilio,
+  conversationSid: string,
+  messageSid: string
+) => {
+  try {
+    const result = await client.conversations
+      .conversations(conversationSid)
+      .messages(messageSid)
+      .remove();
+
+    if (result) {
+      return result;
+    } else {
+      return false;
+    }
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+/*
  * Twilio - Create Participant in Conversations
  */
 export const twilioCreateParticipant = async (
@@ -188,6 +213,28 @@ export const twilioFindExistingConversation = async (
 };
 
 /*
+ * Twilio - Get Conversation
+ */
+export const twilioGetConversation = async (
+  client: twilio.Twilio,
+  conversationSid: string
+) => {
+  try {
+    const result = await client.conversations
+      .conversations(conversationSid)
+      .fetch();
+    if (result.sid) {
+      return result;
+    } else {
+      return false;
+    }
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+/*
  * Twilio - Create Scoped Webhook for onMessageAdded to send to Studio Flow
  */
 export const twilioCreateScopedWebhookStudio = async (
@@ -207,6 +254,52 @@ export const twilioCreateScopedWebhookStudio = async (
     } else {
       return false;
     }
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+/*
+ * Twilio - Get Scoped Webhook
+ */
+export const twilioGetScopedWebhookStudio = async (
+  client: twilio.Twilio,
+  conversationSid: string
+) => {
+  try {
+    const result = await client.conversations
+      .conversations(conversationSid)
+      .webhooks.list({ limit: 20 });
+    if (result.length <= 0) {
+      return false;
+    }
+    for (const wh of result) {
+      if (wh.target === "studio") {
+        return wh;
+      }
+    }
+    return false;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+/*
+ * Twilio - Delete Scoped Webhook
+ */
+export const twilioDeleteScopedWebhookStudio = async (
+  client: twilio.Twilio,
+  conversationSid: string,
+  webhookSid: string
+) => {
+  try {
+    const result = await client.conversations
+      .conversations(conversationSid)
+      .webhooks(webhookSid)
+      .remove();
+    return true;
   } catch (err) {
     console.log(err);
     return false;
@@ -239,28 +332,6 @@ export const twilioCreateScopedWebhook = async (
       });
     if (result.sid) {
       return result.sid;
-    } else {
-      return false;
-    }
-  } catch (err) {
-    console.log(err);
-    return false;
-  }
-};
-
-/*
- * Twilio - Get Conversation
- */
-export const twilioGetConversation = async (
-  client: twilio.Twilio,
-  conversationSid: string
-) => {
-  try {
-    const result = await client.conversations
-      .conversations(conversationSid)
-      .fetch();
-    if (result.sid) {
-      return result;
     } else {
       return false;
     }
