@@ -27,6 +27,7 @@ GitHub Actions streamlines the deployment process to multiple Twilio Flex instan
      - `TWILIO_ACCOUNT_SID`: Twilio Account SID that you are deploying to (starting with `ACxxxxxxxxx`)
      - `TWILIO_API_KEY`: Twilio API Key (starting with `SKxxxxxxxxx`)
      - `TWILIO_API_SECRET`: Twilio API Secret
+1. For each custom channel that you would like to enable, create 1 TaskRouter - Task Channel per custom channel ([Guide](./create-task-channel)).
 1. For each custom channel that you would like to enable, it is recommended that you create 1 Studio per custom channel ([Guide](./create-studio-flow)).
    - You will need to have the Studio Flow SID (starting with `FWxxxxxxxxx`) of each custom channel that you would like to enable.
    - For channels that you **do not** want to enable, you **do not** need to create the Studio Flow.

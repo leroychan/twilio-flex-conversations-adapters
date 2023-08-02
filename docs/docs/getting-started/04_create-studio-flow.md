@@ -1,6 +1,6 @@
 ---
 title: Create Studio Flow
-position: 3
+position: 4
 ---
 
 # Create Studio Flow
@@ -21,7 +21,7 @@ position: 3
 1. For `Template`, select `Start from Scratch`
 1. Within the Studio Flow, drag-and-drop the `Send to Flex` widget into the canvas.
 1. Configure the `Workflow` of `Send to Flex` widget to any chosen TaskRouter workflow. You can choose the default `Assign to Anyone` workflow.
-1. Configure `Task Channel` of `Send to Flex` widget. Select either `Chat` or `Programmable Chat` for this option.
+1. Configure `Task Channel` of `Send to Flex` widget. Select the Task Channel that you have just created created (i.e. `googlechat`, `instagram`, `line`, `viber`).
 1. Connect the `Incoming Conversation` trigger to `Send to Flex` widget and click `Publish`. Do remember to click `Publish` otherwise the Studio Flow will not be activated.
 1. The resultant Studio Flow should look similar to the image above.
 1. Take note of the Flow SID which starts with `FWxxxx`
