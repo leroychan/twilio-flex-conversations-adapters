@@ -49,4 +49,5 @@ title: Google Chat
 
 ## Known Limitations
 
+- Images sent from Flex Agent to End User will be invalidated after 300 seconds (Read more: [here](https://www.twilio.com/docs/conversations/media-support-conversations#platform-differences-for-media-messaging)). If you require longer validity, do consider extending the codebase to upload media to Google Drive.
 - Google's Service Account Authentication for Google Chat API does not support Media Upload (i.e. Video). Read [here](https://developers.google.com/chat/api/guides/auth#asynchronous-chat-calls) for more information
