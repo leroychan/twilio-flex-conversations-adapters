@@ -36,7 +36,7 @@ jobs:
       VIBER_AUTH_TOKEN: ${{ secrets.VIBER_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Node.js v16
+      - name: Setup Node.js v18
         uses: actions/setup-node@v3
         with:
           node-version: "18"
