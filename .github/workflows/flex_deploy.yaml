@@ -39,7 +39,7 @@ jobs:
       - name: Setup Node.js v16
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       - name: Install NPM packages
         id: install-npm
         working-directory: serverless-functions
@@ -69,10 +69,10 @@ jobs:
       TWILIO_API_SECRET: ${{ secrets.TWILIO_API_SECRET }}
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Node.js v16
+      - name: Setup Node.js v18
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       - name: Install NPM packages
         id: install-npm
         working-directory: plugin-conversations-icons
