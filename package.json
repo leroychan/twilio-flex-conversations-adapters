@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@types/wrap-ansi": "^8.1.0"
+  }
+}
